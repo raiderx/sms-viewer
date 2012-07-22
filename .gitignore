@@ -1,0 +1,7 @@
+# IntelliJ IDEA project files
+/.idea/
+*.iml
+
+# Always ignore these files
+logs/
+target/
