@@ -68,15 +68,6 @@ public class SmsViewer {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         createLayout();
-
-        //List<String> files = new ArrayList<String>();
-        //try {
-        //    files = listFiles("/local/vmware/Shared/phone"/*"/media/truecrypt1/Документы/Телефон/Сообщения"*/);
-        //} catch (ApplicationException e) {
-        //    JOptionPane.showMessageDialog(mainFrame, e.getMessage(), "Title", JOptionPane.ERROR_MESSAGE);
-        //}
-        //messages = MessageUtils.parseMessages(files);
-        //fillTree();
     }
 
     /**
