@@ -135,6 +135,12 @@ public class SmsViewer {
         treeModel.setRoot(root);
     }
 
+    /**
+     * Returns list of files in the directory with given path
+     * @param path directory
+     * @return list of files
+     * @throws ApplicationException if path does not exist or path is not a directory
+     */
     public List<String> listFiles(String path) throws ApplicationException {
         File file = new File(path);
         if (!file.exists()) {
@@ -146,6 +152,11 @@ public class SmsViewer {
         return listFiles(file);
     }
 
+    /**
+     * Returns list of "*.vmg" files in the given directory and every subdirectory
+     * @param file directory
+     * @return list of files
+     */
     public List<String> listFiles(File file) {
         File[] files = file.listFiles();
         List<String> result = new ArrayList<String>();
@@ -223,6 +234,9 @@ public class SmsViewer {
         panel.setLayout(layout);
     }
 
+    /**
+     * Shows dialog where user can select directory
+     */
     public void showFolderChooserDialog() {
         int result = fileChooser.showOpenDialog(mainFrame);
         if (result == JFileChooser.APPROVE_OPTION) {

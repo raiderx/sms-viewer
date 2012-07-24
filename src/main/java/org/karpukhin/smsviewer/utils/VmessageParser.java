@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  */
 public class VmessageParser {
 
-    private static final String DATE_FORMAT =  "yyyyMMdd'T'HHmmssz";
-
     private static final Logger logger = Logger.getLogger(VmessageParser.class.getName());
+
+    private static final String DATE_FORMAT =  "yyyyMMdd'T'HHmmssz";
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT);
 
@@ -68,7 +68,7 @@ public class VmessageParser {
                     logger.log(Level.FINE, "Unexpected: {}", type);
                 }
             } else {
-                logger.log(Level.FINE, "Unexpected: {}");
+                logger.log(Level.FINE, "Unexpected: {}", line);
             }
             line = reader.readLine();
         }
@@ -92,7 +92,7 @@ public class VmessageParser {
                 } else if ("VENV".equals(type)) {
                     parseVenv(reader, message);
                 } else {
-                    logger.log(Level.FINE, "Unexpected: {}");
+                    logger.log(Level.FINE, "Unexpected: {}", type);
                 }
             } else if (line.startsWith("VERSION:")) {
                 logger.log(Level.FINE, "Version: {}", line.substring("VERSION:".length()));
@@ -182,7 +182,11 @@ public class VmessageParser {
             if (line.startsWith("Date:")) {
                 //message.setNumber(line.substring("TEL:".length()));
             } else {
-                message.setText(line);
+                if (message.getText() != null) {
+                    message.setText(message.getText() + line);
+                } else {
+                    message.setText(line);
+                }
             }
             line = reader.readLine();
         }
