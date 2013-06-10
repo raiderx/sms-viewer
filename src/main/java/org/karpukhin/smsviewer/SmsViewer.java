@@ -47,6 +47,22 @@ public class SmsViewer {
         splitPane = new JSplitPane();
         tree = new JTree();
         panel = new JPanel();
+
+        UIManager.put("FileChooser.openDialogTitleText", messageSource.getMessage("label.open"));
+        UIManager.put("FileChooser.lookInLabelText", messageSource.getMessage("label.look.in"));
+        UIManager.put("FileChooser.upFolderToolTipText", messageSource.getMessage("label.up.folder"));
+        UIManager.put("FileChooser.homeFolderToolTipText", messageSource.getMessage("label.home"));
+        UIManager.put("FileChooser.newFolderToolTipText", messageSource.getMessage("label.new.folder"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", messageSource.getMessage("label.list"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", messageSource.getMessage("label.details"));
+        UIManager.put("FileChooser.folderNameLabelText", messageSource.getMessage("label.folder.name"));
+        UIManager.put("FileChooser.filesOfTypeLabelText", messageSource.getMessage("label.files.of.type"));
+        UIManager.put("FileChooser.acceptAllFileFilterText", messageSource.getMessage("label.all.files"));
+        UIManager.put("FileChooser.openButtonText", messageSource.getMessage("label.open"));
+        UIManager.put("FileChooser.openButtonToolTipText", messageSource.getMessage("label.open.selected.file"));
+        UIManager.put("FileChooser.cancelButtonText", messageSource.getMessage("label.cancel"));
+        UIManager.put("FileChooser.cancelButtonToolTipText", messageSource.getMessage("label.abort.file.chooser.dialog"));
+
         fileChooser = new JFileChooser(/*System.getProperty("user.home")*/);
     }
 
@@ -117,7 +133,7 @@ public class SmsViewer {
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
                 if (node != null && !node.isRoot() && node.isLeaf() && node.getUserObject() instanceof String) {
-                    showMessages(MessageUtils.getMessagesForNumber(messages, (String)node.getUserObject()));
+                    showMessages(MessageUtils.getMessagesForNumber(messages, (String) node.getUserObject()));
                 }
             }
         });
