@@ -5,7 +5,6 @@ import org.karpukhin.smsviewer.model.Message;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,9 +16,8 @@ public class VmessageParser {
 
     private static final Logger logger = Logger.getLogger(VmessageParser.class.getName());
 
-    private static final String DATE_FORMAT =  "yyyyMMdd'T'HHmmssz";
-
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT);
+    public static final String DATE_FORMAT =  "yyyyMMdd'T'HHmmssz";
+    public static final String DATE_FORMAT2 = "dd.MM.yyyy HH:mm:ss";
 
     public static Message parse(String file) {
         Message result = null;
@@ -57,8 +55,7 @@ public class VmessageParser {
     public static Message parse(BufferedReader reader) throws IOException {
         Message result = new Message();
         String line = reader.readLine();
-        boolean done = false;
-        while (line != null && !done) {
+        while (line != null) {
             logger.log(Level.FINER, "**{}**", line);
             if (line.startsWith("BEGIN:")) {
                 String type = line.substring("BEGIN:".length());
@@ -78,12 +75,10 @@ public class VmessageParser {
     public static void parseVmsg(BufferedReader reader, Message message) throws IOException {
         final String expected = "VMSG";
         String line = reader.readLine();
-        boolean done = false;
-        while (line != null && !done) {
+        while (line != null) {
             logger.log(Level.FINER, "**{}**", line);
             if (line.startsWith("END:" + expected)) {
-                done = true;
-                continue;
+                break;
             }
             if (line.startsWith("BEGIN:")) {
                 String type = line.substring("BEGIN:".length());
@@ -105,7 +100,11 @@ public class VmessageParser {
                 }
             } else if (line.startsWith("X-NOK-DT:")) {
                 try {
-                    message.setDate(parseDate(line.substring("X-NOK-DT:".length()).replace("Z", "GMT+00:00")));
+                    String tmp = line.substring("X-NOK-DT:".length()).replace("Z", "GMT+00:00");
+                    Date date = DateUtils.parseDate(tmp, DATE_FORMAT);
+                    if (message.getDate() == null) {
+                        message.setDate(date);
+                    }
                 } catch (ParseException e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
@@ -119,12 +118,10 @@ public class VmessageParser {
     public static void parseVcard(BufferedReader reader, Message message) throws IOException {
         final String expected = "VCARD";
         String line = reader.readLine();
-        boolean done = false;
-        while (line != null && !done) {
+        while (line != null) {
             logger.log(Level.FINER, "**{}**", line);
             if (line.startsWith("END:" + expected)) {
-                done = true;
-                continue;
+                break;
             }
             if (line.startsWith("TEL:")) {
                 message.setNumber(line.substring("TEL:".length()));
@@ -140,12 +137,10 @@ public class VmessageParser {
     public static void parseVenv(BufferedReader reader, Message message) throws IOException {
         final String expected = "VENV";
         String line = reader.readLine();
-        boolean done = false;
-        while (line != null && !done) {
+        while (line != null) {
             logger.log(Level.FINER, "**{}**", line);
             if (line.startsWith("END:" + expected)) {
-                done = true;
-                continue;
+                break;
             }
             if (line.startsWith("BEGIN:")) {
                 String type = line.substring("BEGIN:".length());
@@ -172,15 +167,20 @@ public class VmessageParser {
     public static void parseVbody(BufferedReader reader, Message message) throws IOException {
         final String expected = "VBODY";
         String line = reader.readLine();
-        boolean done = false;
-        while (line != null && !done) {
+        while (line != null) {
             logger.log(Level.FINER, "**{}**", line);
             if (line.startsWith("END:" + expected)) {
-                done = true;
-                continue;
+                break;
             }
             if (line.startsWith("Date:")) {
-                //message.setNumber(line.substring("TEL:".length()));
+                try {
+                    Date date = DateUtils.parseDate(line.substring("Date:".length()), DATE_FORMAT2);
+                    if (message.getDate() == null) {
+                        message.setDate(date);
+                    }
+                } catch (ParseException e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             } else {
                 if (message.getText() != null) {
                     message.setText(message.getText() + line);
@@ -192,8 +192,14 @@ public class VmessageParser {
         }
     }
 
-    public static Date parseDate(String date) throws ParseException {
-        return SIMPLE_DATE_FORMAT.parse(date);
+    public static interface LineParser {
+        boolean parse(BufferedReader reader, Message message);
     }
 
+    public static class VbodyParser implements LineParser {
+        @Override
+        public boolean parse(BufferedReader reader, Message message) {
+            return false;
+        }
+    }
 }
