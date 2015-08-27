@@ -284,7 +284,7 @@ public class SmsViewer {
         private static Logger logger = Logger.getLogger(MessageUtils.class.getName());
 
         public static List<Message> parseMessages(List<String> files) {
-            List<Message> messages = new ArrayList<Message>();
+            List<Message> messages = new ArrayList<Message>(files.size());
             for (String file : files) {
                 logger.log(Level.FINE, file);
                 Message message = VmessageParser.parse(file);
